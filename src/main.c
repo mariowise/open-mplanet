@@ -6,25 +6,22 @@
 	#include <omp.h>
 #endif
 
-void * body(int params) {
-	printf("I don't want no trouble Sir.. just doing the task no. %d!\n", params);
-}
+#include <getpar.h>
+#include <point2D.h>
+#include <universe.h>
+#include <quadtree.h>
+#include <linkedlist.h>
+#include <arraylist.h>
+
 
 int main(int argc, char * argv[]) {
 
-	int nthreads = 4;
+	getpar(argc, argv); // Obtención de parámetros
+	load(par.i); // Carga del archivo de entrada
+	quadtree_init();
+	quadtree_build(&tree);
 
-	#pragma omp parallel num_threads(nthreads)
-	{
-		#pragma omp single 
-		{
-			int i;
-			for(i = 0; i < 4; i++) {
-				#pragma omp task
-					body(i);
-			}
-		}
-	}
+	
 
 	return EXIT_SUCCESS;
 }
