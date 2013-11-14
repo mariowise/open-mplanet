@@ -15,6 +15,7 @@ struct _univ {
 	int cant;			// Cantidad de planetas en el universo
 	double ratio;		// Radio del universo
 	object * objects;	// Planetas u objetos del universo
+	double mass;		// Masa total del universo
 
 } univ;
 

@@ -7,4 +7,6 @@ void * array_remove(void * list, int * size, int it);
 
 void array_print(void * list, int size);
 
+int array_find(void * list, int size, int number);
+
 #endif

@@ -6,6 +6,7 @@ typedef struct {
 	int * objects;
 
 	double mass;
+	point2D massCentre;
 
 	point2D anchor;
 	double ratio;
@@ -19,9 +20,14 @@ typedef struct {
 } qnode;
 
 qnode tree;
+qnode nextTree;
 
 void quadtree_init();
 
 void quadtree_build(qnode * node);
+
+void quadtree_compute(int obid);
+
+void quadtree_print(qnode * node, int base);
 
 #endif

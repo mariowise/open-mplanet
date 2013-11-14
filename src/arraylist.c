@@ -34,3 +34,11 @@ void array_print(void * list, int size) {
 	printf(")\n");
 }
 
+int array_find(void * list, int size, int number) {
+	int i;
+	for(i = 0; i < size; i++) {
+		if(((int *) list)[i] == number) 
+			return 1;
+	}
+	return 0;
+}

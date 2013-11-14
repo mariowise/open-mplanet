@@ -61,6 +61,9 @@ void * load(char * name) {
 		// Masa del objeto
 		token = strtok(NULL, " \n\r\t");
 		univ.objects[i].mass = (double) atof(token); // printf("%.3e\n", univ.objects[i].mass);
+
+		// Se incrementa la masa del universo
+		univ.mass += univ.objects[i].mass;
 		
 		i++;
 

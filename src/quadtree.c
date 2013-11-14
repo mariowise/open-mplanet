@@ -6,6 +6,8 @@
 #include <arraylist.h>
 #include <quadtree.h>
 
+// #define DDEBUG 0
+
 // Procedimiento para inicializar el primer nodo del árbol
 void quadtree_init() {
 	tree.cant = univ.cant;
@@ -14,8 +16,8 @@ void quadtree_init() {
 	int i;
 	for(i = 0; i < tree.cant; i++)
 		tree.objects[i] = i;
-	for(i = 0; i < tree.cant; i++)
-		tree.mass += univ.objects[i].mass;
+	// for(i = 0; i < tree.cant; i++)
+	// 	tree.mass += univ.objects[i].mass;
 
 	tree.anchor.x = 0;
 	tree.anchor.y = 0;
@@ -23,8 +25,6 @@ void quadtree_init() {
 
 	// printf("Árbol inicializado con 5 objetos y una masa de %.3e kilos\n", tree.mass);
 }
-
-int control;
 
 // Procedimiento para propagar recursivamente el árbol y construirlo
 void quadtree_build(qnode * node) {
@@ -43,6 +43,7 @@ void quadtree_build(qnode * node) {
 		sw->ratio = node->ratio / 2;
 		se->ratio = node->ratio / 2;
 
+			// Nuevas coordenadas del centro de cada cuadrante
 			// NW
 			nw->anchor.x = node->anchor.x - nw->ratio;
 			nw->anchor.y = node->anchor.y + nw->ratio;
@@ -59,20 +60,26 @@ void quadtree_build(qnode * node) {
 			se->anchor.x = node->anchor.x + se->ratio;
 			se->anchor.y = node->anchor.y - se->ratio;
 
-		// printf("nw anchor (%.2E, %.2E)\n", nw->anchor.x, nw->anchor.y);
-		// printf("NW anchor (%.2E, %.2E)\n", ((qnode *) node->NW)->anchor.x, ((qnode *) node->NW)->anchor.y);
-
 		int i, li;
+
+		// Cálulo del centro de masa de la constelación
+		for(i = 0; i < node->cant; i++) {
+			li = node->objects[i];
+			node->massCentre.x += univ.objects[li].pos.x * univ.objects[li].mass / univ.mass;
+			node->massCentre.y += univ.objects[li].pos.y * univ.objects[li].mass / univ.mass;
+
+			node->mass += univ.objects[li].mass;
+		}
+
+		#ifdef DDEBUG
 		printf("\nVector padre tiene ");
 		array_print(node->objects, node->cant);
-		printf("Anchor= (%.2E, %.2E)\n", node->anchor.x, node->anchor.y);
+		printf("Anchor= (%.2E, %.2E) Mass= %.3E Centre= (%.3E, %.3E)\n", node->anchor.x, node->anchor.y, node->mass, node->massCentre.x, node->massCentre.y);
+		#endif
+
 		for(i = 0; i < node->cant; i++) {
 
 			li = node->objects[i];
-
-			// if(node->objects[i] == 3) {
-			// 	printf("\t\tIs %.3E less then %.3E ? %s \n", node->anchor.x, univ.objects[li].pos.x, (node->anchor.x < univ.objects[li].pos.x) ? "true" : "false");
-			// }
 
 			if(
 				univ.objects[li].pos.x < node->anchor.x && univ.objects[li].pos.y >= node->anchor.y) {
@@ -105,6 +112,7 @@ void quadtree_build(qnode * node) {
 
 		}
 
+		#ifdef DDEBUG
 		printf("\tNW(%d): ", ((qnode *) node->NW)->cant);
 		array_print(((qnode *) node->NW)->objects, ((qnode *) node->NW)->cant);
 
@@ -116,7 +124,7 @@ void quadtree_build(qnode * node) {
 
 		printf("\tSE(%d): ", ((qnode *) node->SE)->cant);
 		array_print(((qnode *) node->SE)->objects, ((qnode *) node->SE)->cant);
-		
+		#endif
 		// control++;
 		// if(control == 8)
 		// 	exit(0);		
@@ -126,5 +134,37 @@ void quadtree_build(qnode * node) {
 		quadtree_build(node->SW);
 		quadtree_build(node->SE);
 
+	} else if(node->cant == 1) {
+
+		#ifdef DDEBUG
+		printf("\nVector padre tiene ");
+		array_print(node->objects, node->cant);
+		#endif
+
+		int li = node->objects[0];
+		node->massCentre.x += univ.objects[li].pos.x * univ.objects[li].mass / univ.mass;
+		node->massCentre.y += univ.objects[li].pos.y * univ.objects[li].mass / univ.mass;
+
+		node->mass += univ.objects[li].mass;		
+
+		#ifdef DDEBUG
+		printf("Anchor= (%.2E, %.2E) Mass= %.3E Centre= (%.3E, %.3E)\n", node->anchor.x, node->anchor.y, node->mass, node->massCentre.x, node->massCentre.y);
+		#endif
 	}
+}
+
+void quadtree_print(qnode * node, int base) {
+	int i;
+	for(i = 0; i < base; i++)
+		printf("    ");
+	if(node->cant > 0)
+		array_print(node->objects, node->cant);
+	if(node->NW != NULL)
+		quadtree_print(node->NW, base+1);
+	if(node->NE != NULL)
+		quadtree_print(node->NE, base+1);
+	if(node->SW != NULL)
+		quadtree_print(node->SW, base+1);
+	if(node->SE != NULL)
+		quadtree_print(node->SE, base+1);
 }

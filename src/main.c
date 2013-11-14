@@ -21,7 +21,8 @@ int main(int argc, char * argv[]) {
 	quadtree_init();
 	quadtree_build(&tree);
 
-	
+	quadtree_print(&tree, 0);
+	printf("\n");
 
 	return EXIT_SUCCESS;
 }
