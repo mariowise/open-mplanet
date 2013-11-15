@@ -23,4 +23,6 @@ void * load(char * name);
 
 void _copy(struct _univ * u1, struct _univ * u2);
 
+void gravitation(struct _univ * u1, struct _univ * u2);
+
 #endif

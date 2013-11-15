@@ -1,10 +1,10 @@
 INCLUDE = -I src/
 OUTPUT = ./bin/planet.run
-LINKS = -fopenmp -lm
+LINKS = -fopenmp -lm -lX11
 
 CFLAG = -c -w
 
-main: build/main.o build/getpar.o build/point2D.o build/universe.o build/quadtree.o build/arraylist.o
+main: build/main.o build/getpar.o build/point2D.o build/universe.o build/quadtree.o build/arraylist.o build/visu.o
 	@ gcc -o $(OUTPUT) build/*.o $(LINKS)
 	@ printf "Done here is the program "
 	@ printf $(OUTPUT)
@@ -40,6 +40,11 @@ build/arraylist.o: src/arraylist.c
 	@ gcc $(CFLAG) -o build/arraylist.o src/arraylist.c $(INCLUDE)
 	@ printf "OK\n"
 
+build/visu.o: src/visu.c
+	@ printf "  cc src/visu.c "
+	@ gcc $(CFLAG) -o build/visu.o src/visu.c $(INCLUDE)
+	@ printf "OK\n"
+
 clean:
 	@ clear
 	@ echo "Cleanning"
@@ -48,6 +53,6 @@ clean:
 
 run:
 	@ clear
-	@ $(OUTPUT) -i etc/input.dat -o output.dat -T 0.01 -t 0.001 -h 4
+	@ $(OUTPUT) -i etc/input.dat -o output.dat -T 4.0E+12 -t 10000 -h 4
 
 me: clean main run

@@ -72,6 +72,7 @@ void * load(char * name) {
 	_copy(&univ2, &univ);
 }
 
+// Copia un universo en otro
 void _copy(struct _univ * u1, struct _univ * u2) {
 	u1->cant 	= u2->cant;
 	u1->ratio 	= u2->ratio;
@@ -91,5 +92,21 @@ void _copy(struct _univ * u1, struct _univ * u2) {
 		u1->objects[i].acc.x = u2->objects[i].acc.x;
 		u1->objects[i].acc.y = u2->objects[i].acc.y;
 		u1->objects[i].mass = u2->objects[i].mass;		
+	}
+}
+
+// Computa las posiciones y las velocidades
+void gravitation(struct _univ * u1, struct _univ * u2) {
+	int i;
+	for(i = 0; i < u1->cant; i++) {
+
+		// V(t+1) = v(t) + dt * a(t)
+		u2->objects[i].vel.x = u1->objects[i].vel.x + par.t * u1->objects[i].acc.x;
+		u2->objects[i].vel.y = u1->objects[i].vel.y + par.t * u1->objects[i].acc.y;
+
+		// Pos(t+1) = Pos(t) + dt * v(t+1)
+		u2->objects[i].pos.x = u1->objects[i].pos.x + par.t * u2->objects[i].vel.x;
+		u2->objects[i].pos.y = u1->objects[i].pos.y + par.t * u2->objects[i].vel.y;
+
 	}
 }

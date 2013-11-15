@@ -1,6 +1,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <math.h>
+
 #include <getpar.h>
 #include <point2D.h>
 #include <universe.h>
@@ -183,31 +186,25 @@ void quadtree_barnes_hut(qnode * T, int Ci) {
 
 	// Si es un nodo externo
 	if(T->cant == 1 && T->objects[0] != Ci) {
-		double forceBetweenThem = 6.674E-11 * (univ.objects[Ci].mass * univ.objects[T->objects[0]].mass) / r;
+		double forceBetweenThem = 6.674E-11 * (univ.objects[Ci].mass * univ.objects[T->objects[0]].mass) / (r * r);
+		// printf("\tforce = %.3E\n", forceBetweenThem);
 		point2D * direction = point2D_direction(univ.objects[Ci].pos, univ.objects[T->objects[0]].pos);
 		double accModule = forceBetweenThem / univ.objects[Ci].mass;
 		direction->x *= accModule;
 		direction->y *= accModule;
 
-		// # CRITICAL ################
+		// # CRITICAL #############################################
 		// a(t)
-		univ2.objects[Ci].acc.x += direction->x;
-		univ2.objects[Ci].acc.y += direction->y;
-
-		// v(t+1)
-		univ2.objects[Ci].vel.x += par.t * univ.objects[Ci].acc.x;
-		univ2.objects[Ci].vel.y += par.t * univ.objects[Ci].acc.y;
-
-		// p(t+1)
-		univ2.objects[Ci].pos.x += par.t * univ2.objects[Ci].vel.x;
-		univ2.objects[Ci].pos.y += par.t * univ2.objects[Ci].vel.y;
-		// ###########################
+		univ2.objects[Ci].acc.x = direction->x;
+		univ2.objects[Ci].acc.y = direction->y;
+		// ########################################################
 
 		return;
 	// }
 	// if(point2D_distance(univ.objects[Ci].pos, univ.objects[T->objects[0]].pos) > Threshold) {
 
-
+	} else if(T->cant == 1 && T->objects[0] == Ci) {
+		return;
 
 	} else {
 		if(T->NW != NULL)
