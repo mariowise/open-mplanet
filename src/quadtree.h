@@ -21,6 +21,7 @@ typedef struct {
 
 qnode tree;
 qnode nextTree;
+double Threshold;
 
 void quadtree_init();
 
@@ -29,5 +30,7 @@ void quadtree_build(qnode * node);
 void quadtree_compute(int obid);
 
 void quadtree_print(qnode * node, int base);
+
+void quadtree_barnes_hut(qnode * T, int Ci);
 
 #endif

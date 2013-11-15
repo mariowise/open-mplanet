@@ -10,4 +10,6 @@ double point2D_distance(point2D p1, point2D p2);
 
 double point2D_module(point2D p);
 
+point2D * point2D_direction(point2D p1, point2D p2);
+
 #endif

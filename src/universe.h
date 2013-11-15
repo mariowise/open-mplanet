@@ -17,8 +17,10 @@ struct _univ {
 	object * objects;	// Planetas u objetos del universo
 	double mass;		// Masa total del universo
 
-} univ;
+} univ, univ2;
 
 void * load(char * name);
+
+void _copy(struct _univ * u1, struct _univ * u2);
 
 #endif

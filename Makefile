@@ -4,7 +4,7 @@ LINKS = -fopenmp -lm
 
 CFLAG = -c -w
 
-main: build/main.o build/getpar.o build/point2D.o build/universe.o build/quadtree.o build/linkedlist.o build/arraylist.o
+main: build/main.o build/getpar.o build/point2D.o build/universe.o build/quadtree.o build/arraylist.o
 	@ gcc -o $(OUTPUT) build/*.o $(LINKS)
 	@ printf "Done here is the program "
 	@ printf $(OUTPUT)
@@ -35,11 +35,6 @@ build/quadtree.o: src/quadtree.c
 	@ gcc $(CFLAG) -o build/quadtree.o src/quadtree.c $(INCLUDE)
 	@ printf "OK\n"
 
-build/linkedlist.o: src/linkedlist.c
-	@ printf "  cc src/linkedlist.c "
-	@ gcc $(CFLAG) -o build/linkedlist.o src/linkedlist.c $(INCLUDE)
-	@ printf "OK\n"
-
 build/arraylist.o: src/arraylist.c
 	@ printf "  cc src/arraylist.c "
 	@ gcc $(CFLAG) -o build/arraylist.o src/arraylist.c $(INCLUDE)
@@ -53,6 +48,6 @@ clean:
 
 run:
 	@ clear
-	@ $(OUTPUT) -i etc/input.dat -o output.dat -T 20 -t 0.1 -h 4
+	@ $(OUTPUT) -i etc/input.dat -o output.dat -T 0.01 -t 0.001 -h 4
 
 me: clean main run

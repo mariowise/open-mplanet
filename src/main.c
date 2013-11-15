@@ -18,11 +18,27 @@ int main(int argc, char * argv[]) {
 
 	getpar(argc, argv); // Obtención de parámetros
 	load(par.i); // Carga del archivo de entrada
-	quadtree_init();
-	quadtree_build(&tree);
 
-	quadtree_print(&tree, 0);
-	printf("\n");
+	int i, times;
+
+	while(times < (par.T / par.t)) {
+		// printf("Iniciando\n");
+		quadtree_init();
+
+		// printf("Construyendo arbol\n");
+		quadtree_build(&tree);
+
+		// printf("Calculando posiciones\n");
+		for(i = 0; i < tree.cant; i++) {
+			quadtree_barnes_hut(&tree, tree.objects[i]);
+		}
+
+		// printf("Copiando nuevo universo\n");
+		_copy(&univ, &univ2);
+		printf("(%.3E, %.3E)\n", univ.objects[0].pos.x, univ.objects[0].pos.y);
+
+		times++;
+	}
 
 	return EXIT_SUCCESS;
 }

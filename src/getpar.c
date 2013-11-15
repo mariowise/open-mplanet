@@ -26,7 +26,7 @@ void getpar(int argc, char * argv[]) {
 				par.check[1] = 1;
 				break;
 			case 'T':
-				par.T = atoi(optarg);
+				par.T = (float) atof(optarg);
 				par.check[2] = 1;	
 				break;
 			case 't':
@@ -80,7 +80,7 @@ void getpar(int argc, char * argv[]) {
 void printpar() {
 	printf(" -i: %s\n", par.i);
 	printf(" -o: %s\n", par.o);
-	printf(" -T: %d\n", par.T);
+	printf(" -T: %.2f\n", par.T);
 	printf(" -t: %.2f\n", par.t);
 	printf(" -h: %d\n", par.h);
 }

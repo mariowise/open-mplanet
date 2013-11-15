@@ -9,7 +9,7 @@
 // Lee el archivo de entrada y construye el universo
 void * load(char * name) {
 	FILE * fd;
-	char * line;
+	char * line = (char *) malloc(sizeof(char));
 	size_t len;
 	ssize_t read;
 
@@ -67,5 +67,29 @@ void * load(char * name) {
 		
 		i++;
 
+	}
+
+	_copy(&univ2, &univ);
+}
+
+void _copy(struct _univ * u1, struct _univ * u2) {
+	u1->cant 	= u2->cant;
+	u1->ratio 	= u2->ratio;
+	u1->mass 	= u2->mass;
+	
+	if(u1->objects != NULL) 
+		free(u1->objects);
+	
+	u1->objects = (object *) malloc(sizeof(object) * u1->cant);
+
+	int i;
+	for(i = 0; i < u1->cant; i++) {
+		u1->objects[i].pos.x = u2->objects[i].pos.x;
+		u1->objects[i].pos.y = u2->objects[i].pos.y;
+		u1->objects[i].vel.x = u2->objects[i].vel.x;
+		u1->objects[i].vel.y = u2->objects[i].vel.y;
+		u1->objects[i].acc.x = u2->objects[i].acc.x;
+		u1->objects[i].acc.y = u2->objects[i].acc.y;
+		u1->objects[i].mass = u2->objects[i].mass;		
 	}
 }

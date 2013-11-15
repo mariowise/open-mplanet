@@ -5,7 +5,7 @@ struct _par {
 	
 	char * i; 	// Archivo con la configuración inicial del universo	
 	char * o; 	// Archivo con la configuración final del universo	
-	int T; 		// Tiempo de simulación	
+	float T;	// Tiempo de simulación	
 	float t;	// Intervalo de tiempo	
 	int h; 		// Número máximo de hebras
 

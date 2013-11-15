@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <getpar.h>
 #include <point2D.h>
 #include <universe.h>
 #include <arraylist.h>
@@ -153,12 +154,12 @@ void quadtree_build(qnode * node) {
 	}
 }
 
+// Muestra el árbol por niveles
 void quadtree_print(qnode * node, int base) {
 	int i;
 	for(i = 0; i < base; i++)
 		printf("    ");
-	if(node->cant > 0)
-		array_print(node->objects, node->cant);
+	array_print(node->objects, node->cant);
 	if(node->NW != NULL)
 		quadtree_print(node->NW, base+1);
 	if(node->NE != NULL)
@@ -167,4 +168,55 @@ void quadtree_print(qnode * node, int base) {
 		quadtree_print(node->SW, base+1);
 	if(node->SE != NULL)
 		quadtree_print(node->SE, base+1);
+}
+
+// Ejecuta el procedimiento de barnes-hut
+void quadtree_barnes_hut(qnode * T, int Ci) {
+	if(T == NULL) {
+		printf("* Error: I cant do barnes-hut from null pointer.\n");
+		exit(1);
+	} else if(T->cant == 0)
+		return;
+
+
+	double r = point2D_distance(univ.objects[Ci].pos, univ.objects[T->objects[0]].pos);
+
+	// Si es un nodo externo
+	if(T->cant == 1 && T->objects[0] != Ci) {
+		double forceBetweenThem = 6.674E-11 * (univ.objects[Ci].mass * univ.objects[T->objects[0]].mass) / r;
+		point2D * direction = point2D_direction(univ.objects[Ci].pos, univ.objects[T->objects[0]].pos);
+		double accModule = forceBetweenThem / univ.objects[Ci].mass;
+		direction->x *= accModule;
+		direction->y *= accModule;
+
+		// # CRITICAL ################
+		// a(t)
+		univ2.objects[Ci].acc.x += direction->x;
+		univ2.objects[Ci].acc.y += direction->y;
+
+		// v(t+1)
+		univ2.objects[Ci].vel.x += par.t * univ.objects[Ci].acc.x;
+		univ2.objects[Ci].vel.y += par.t * univ.objects[Ci].acc.y;
+
+		// p(t+1)
+		univ2.objects[Ci].pos.x += par.t * univ2.objects[Ci].vel.x;
+		univ2.objects[Ci].pos.y += par.t * univ2.objects[Ci].vel.y;
+		// ###########################
+
+		return;
+	// }
+	// if(point2D_distance(univ.objects[Ci].pos, univ.objects[T->objects[0]].pos) > Threshold) {
+
+
+
+	} else {
+		if(T->NW != NULL)
+			quadtree_barnes_hut(T->NW, Ci);
+		if(T->NE != NULL)
+			quadtree_barnes_hut(T->NE, Ci);
+		if(T->SW != NULL)
+			quadtree_barnes_hut(T->SW, Ci);
+		if(T->SE != NULL)
+			quadtree_barnes_hut(T->SE, Ci);
+	}
 }
