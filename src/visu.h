@@ -1,8 +1,8 @@
 #ifndef VISU_H_
 #define VISU_H_
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 800
+#define WINDOW_WIDTH 600
+#define WINDOW_HEIGHT 600
 
 Window win;
 

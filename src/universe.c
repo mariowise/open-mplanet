@@ -104,12 +104,18 @@ void gravitation(struct _univ * u1, struct _univ * u2) {
 	for(i = 0; i < u1->cant; i++) {
 
 		// V(t+1) = v(t) + dt * a(t)
-		u2->objects[i].vel.x = u1->objects[i].vel.x + 1 * u1->objects[i].acc.x;
-		u2->objects[i].vel.y = u1->objects[i].vel.y + 1 * u1->objects[i].acc.y;
+		u2->objects[i].vel.x = u1->objects[i].vel.x + par.t * u1->objects[i].acc.x;
+		u2->objects[i].vel.y = u1->objects[i].vel.y + par.t * u1->objects[i].acc.y;
 
 		// Pos(t+1) = Pos(t) + dt * v(t+1)
-		u2->objects[i].pos.x = u1->objects[i].pos.x + 1 * u2->objects[i].vel.x;
-		u2->objects[i].pos.y = u1->objects[i].pos.y + 1 * u2->objects[i].vel.y;
-		
+		u2->objects[i].pos.x = u1->objects[i].pos.x + par.t * u2->objects[i].vel.x;
+		u2->objects[i].pos.y = u1->objects[i].pos.y + par.t * u2->objects[i].vel.y;
+
+		u2->objects[i].acc.x = 0;
+		u2->objects[i].acc.y = 0;
+
+		u1->objects[i].acc.x = 0;
+		u1->objects[i].acc.y = 0;
+
 	}
 }

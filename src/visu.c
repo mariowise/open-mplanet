@@ -54,13 +54,18 @@ void visu_start_window() {
 }
 
 void visu_draw_universe() {
-	int i, visx, visy;
-	double px, py;
+	int i, visx, visy, size;
+	double px, py, mass;
 	XClearWindow(display, win);
 	for(i = 0; i < univ.cant; i++) {
 		// Posiciones absolutas
 		px =  univ.objects[i].pos.x;
 		py = -univ.objects[i].pos.y;
+
+        if(univ.objects[i].mass > 1.0E+29)
+            size = 18;
+        else
+            size = 9;
 
 		// Posiciones relativas
 		visx = (int) floor((px + univ.ratio) / (univ.ratio * 2) * WINDOW_WIDTH);
@@ -71,7 +76,7 @@ void visu_draw_universe() {
         XAllocColor(display, screen_colormap, &grayColor);
         XSetForeground(display, gc, grayColor.pixel);
 
-        XFillArc(display, win, gc, visx, visy, 8, 8, 0, 360*64);
+        XFillArc(display, win, gc, visx, visy, size, size, 0, 360*64);
         
         grayColor.red = grayColor.green= grayColor.blue = 0;
         XAllocColor(display, screen_colormap, &grayColor);

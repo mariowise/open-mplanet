@@ -57,7 +57,7 @@ int main(int argc, char * argv[]) {
 
 		quadtree_build(tree);
 
-		#pragma omp parallel num_threads(par.h)
+		#pragma omp parallel num_threads(par.h) private(i)
 		{
 			#pragma omp single
 			{
@@ -65,23 +65,23 @@ int main(int argc, char * argv[]) {
 					#pragma omp task
 					{
 						quadtree_barnes_hut(tree, tree->objects[i]);
-						// printf("Task done by thread no. %d\n", omp_get_thread_num());
 					}
 			}
 		}
 
-		for(i = 0; i < tree->cant; i++)
-			quadtree_barnes_hut(tree, tree->objects[i]);
+		// for(i = 0; i < tree->cant; i++)
+		// 	quadtree_barnes_hut(tree, tree->objects[i]);
 		
 		gravitation(&univ, &univ2);
 		
 		visu_draw_universe();
 		_copy(&univ, &univ2);		
 
+		// Genera memory leak!
 		// quadtree_destroy(tree);
 		// free(tree);
 
-		usleep(1E+3 * 10);
+		usleep(1E+3 * 25);
 		times++;
 	}
 
