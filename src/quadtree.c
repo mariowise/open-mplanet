@@ -312,7 +312,6 @@ void quadtree_barnes_hut(qnode * T, int Ci) {
 	// Si es un nodo externo
 	if(T->cant == 1 && T->objects[0] != Ci) {
 		double forceBetweenThem = 6.674E-11 * (univ.objects[Ci].mass * univ.objects[T->objects[0]].mass) / (r * r);
-		// printf("\tforce = %.3E\n", forceBetweenThem);
 		point2D * direction = point2D_direction(univ.objects[Ci].pos, univ.objects[T->objects[0]].pos);
 		double accModule = forceBetweenThem / univ.objects[Ci].mass;
 		direction->x *= accModule;
@@ -320,8 +319,8 @@ void quadtree_barnes_hut(qnode * T, int Ci) {
 
 		// # CRITICAL #############################################
 		// a(t)
-		univ2.objects[Ci].acc.x = direction->x;
-		univ2.objects[Ci].acc.y = direction->y;
+		univ2.objects[Ci].acc.x += direction->x;
+		univ2.objects[Ci].acc.y += direction->y;
 		// ########################################################
 
 		return;
