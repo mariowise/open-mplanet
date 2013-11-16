@@ -12,7 +12,7 @@ main: build/main.o build/getpar.o build/point2D.o build/universe.o build/quadtre
 
 build/main.o: src/main.c
 	@ printf "  cc src/main.c "
-	@ gcc $(CFLAG) -o build/main.o src/main.c $(INCLUDE)
+	@ gcc $(CFLAG) -o build/main.o src/main.c $(INCLUDE) $(LINKS)
 	@ printf "OK\n"
 
 build/getpar.o: src/getpar.c
@@ -32,7 +32,7 @@ build/universe.o: src/universe.c
 
 build/quadtree.o: src/quadtree.c
 	@ printf "  cc src/quadtree.c "
-	@ gcc $(CFLAG) -o build/quadtree.o src/quadtree.c $(INCLUDE)
+	@ gcc $(CFLAG) -o build/quadtree.o src/quadtree.c $(INCLUDE) $(LINKS)
 	@ printf "OK\n"
 
 build/arraylist.o: src/arraylist.c
@@ -53,6 +53,6 @@ clean:
 
 run:
 	@ clear
-	@ $(OUTPUT) -i etc/input.dat -o output.dat -T 4.0E+12 -t 10000 -h 4
+	@ $(OUTPUT) -i etc/input.dat -o output.dat -T 4.0E+12 -t 10000 -h 8
 
 me: clean main run

@@ -1,7 +1,7 @@
 #ifndef QUADTREE_H_
 #define QUADTREE_H_
 
-typedef struct {
+typedef struct _qnode {
 	int cant;
 	int * objects;
 
@@ -13,21 +13,21 @@ typedef struct {
 
 	struct qnode * parent;
 
-	struct qnode * NW;
-	struct qnode * NE;
-	struct qnode * SW;
-	struct qnode * SE;
+	struct _qnode * NW;
+	struct _qnode * NE;
+	struct _qnode * SW;
+	struct _qnode * SE;
 } qnode;
 
-qnode tree;
+qnode * tree;
 qnode nextTree;
 double Threshold;
 
-void quadtree_init();
+qnode * quadtree_init();
+
+void quadtree_destroy(qnode * node);
 
 void quadtree_build(qnode * node);
-
-void quadtree_compute(int obid);
 
 void quadtree_print(qnode * node, int base);
 

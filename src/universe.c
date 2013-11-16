@@ -87,10 +87,13 @@ void _copy(struct _univ * u1, struct _univ * u2) {
 	for(i = 0; i < u1->cant; i++) {
 		u1->objects[i].pos.x = u2->objects[i].pos.x;
 		u1->objects[i].pos.y = u2->objects[i].pos.y;
+
 		u1->objects[i].vel.x = u2->objects[i].vel.x;
 		u1->objects[i].vel.y = u2->objects[i].vel.y;
+
 		u1->objects[i].acc.x = u2->objects[i].acc.x;
 		u1->objects[i].acc.y = u2->objects[i].acc.y;
+		
 		u1->objects[i].mass = u2->objects[i].mass;		
 	}
 }

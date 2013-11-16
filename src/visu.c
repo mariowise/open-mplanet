@@ -71,7 +71,7 @@ void visu_draw_universe() {
         XAllocColor(display, screen_colormap, &grayColor);
         XSetForeground(display, gc, grayColor.pixel);
 
-        XFillArc(display, win, gc, visx, visy, 15, 15, 0, 360*64);
+        XFillArc(display, win, gc, visx, visy, 8, 8, 0, 360*64);
         
         grayColor.red = grayColor.green= grayColor.blue = 0;
         XAllocColor(display, screen_colormap, &grayColor);

@@ -12,7 +12,6 @@
 #include <point2D.h>
 #include <universe.h>
 #include <quadtree.h>
-#include <linkedlist.h>
 #include <arraylist.h>
 
 #define NR 1.0E+08
@@ -45,24 +44,42 @@ int main(int argc, char * argv[]) {
 	visu_start_window();
 
 	int i, times;
+	qnode * aux;
 
 	while(times < (par.T / par.t)) {
 		// printf("Iniciando\n");
-		quadtree_init();
+		tree = quadtree_init();
 
-		printf("(%.0f, %.0f)", univ.objects[1].pos.x / NR, univ.objects[1].pos.y / NR);
-		printf("\tspeed = (%.0E, %.0E)", univ.objects[1].vel.x, univ.objects[1].vel.y);
-		printf("\tacc = (%.0E, %.0E)", univ.objects[1].acc.x, univ.objects[1].acc.y);
-		printf("\t[%.1E]\n", point2D_module(univ.objects[1].acc));
+		// printf("(%.0f, %.0f)", univ.objects[1].pos.x / NR, univ.objects[1].pos.y / NR);
+		// printf("\tspeed = (%.0E, %.0E)", univ.objects[1].vel.x, univ.objects[1].vel.y);
+		// printf("\tacc = (%.0E, %.0E)", univ.objects[1].acc.x, univ.objects[1].acc.y);
+		// printf("\t[%.1E]\n", point2D_module(univ.objects[1].acc));
 
-		quadtree_build(&tree);		
-		for(i = 0; i < tree.cant; i++)
-			quadtree_barnes_hut(&tree, tree.objects[i]);
+		quadtree_build(tree);
+
+		#pragma omp parallel num_threads(par.h)
+		{
+			#pragma omp single
+			{
+				for(i = 0; i < tree->cant; i++)
+					#pragma omp task
+					{
+						quadtree_barnes_hut(tree, tree->objects[i]);
+						// printf("Task done by thread no. %d\n", omp_get_thread_num());
+					}
+			}
+		}
+
+		for(i = 0; i < tree->cant; i++)
+			quadtree_barnes_hut(tree, tree->objects[i]);
+		
 		gravitation(&univ, &univ2);
 		
 		visu_draw_universe();
-		
 		_copy(&univ, &univ2);		
+
+		// quadtree_destroy(tree);
+		// free(tree);
 
 		usleep(1E+3 * 10);
 		times++;

@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <arraylist.h>
 
-void * array_push(void * list, int * size, int newInt) {
-	list = realloc(list, sizeof(int) * (*size+1));
+int * array_push(int * list, int * size, int newInt) {
+	list = (int *) realloc(list, sizeof(int) * (*size+1));
 	((int *) list)[*size] = newInt;
 	size[0]++;
 	return list;
@@ -23,7 +23,7 @@ void * array_remove(void * list, int * size, int it) {
 	return list;
 }
 
-void array_print(void * list, int size) {
+void array_print(int * list, int size) {
 	int i;
 	printf("(");
 	for(i = 0; i < size; i++) {

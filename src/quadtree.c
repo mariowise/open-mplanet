@@ -12,34 +12,81 @@
 
 // #define DDEBUG 0
 
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+
 // Procedimiento para inicializar el primer nodo del árbol
-void quadtree_init() {
-	tree.cant = univ.cant;
-	tree.objects = (int *) malloc(sizeof(int) * tree.cant);
-	tree.mass = 0.0f;
+qnode * quadtree_init() {
+	qnode * node = (qnode *) malloc(sizeof(qnode));
+	node->cant = univ.cant;
+	node->objects = (int *) malloc(sizeof(int) * node->cant);
+	node->mass = 0.0f;
 	int i;
-	for(i = 0; i < tree.cant; i++)
-		tree.objects[i] = i;
-	// for(i = 0; i < tree.cant; i++)
-	// 	tree.mass += univ.objects[i].mass;
+	for(i = 0; i < node->cant; i++)
+		node->objects[i] = i;
+	
+	node->anchor.x = 0;
+	node->anchor.y = 0;
+	node->ratio = univ.ratio;
+	return node;
+}
 
-	tree.anchor.x = 0;
-	tree.anchor.y = 0;
-	tree.ratio = univ.ratio;
+// Libera la memoria de un árbol
+void quadtree_destroy(qnode * node) {
+	if(node->objects != NULL) {
+		free(node->objects);
+	}
 
-	// printf("Árbol inicializado con 5 objetos y una masa de %.3e kilos\n", tree.mass);
+	if(node->NW != NULL) {
+		quadtree_destroy(node->NW);
+		free(node->NW);
+	}
+	if(node->NE != NULL) {
+		quadtree_destroy(node->NE);
+		free(node->NE);
+	}
+	if(node->SW != NULL) {
+		quadtree_destroy(node->SW);
+		free(node->SW);
+	}
+	if(node->SE != NULL) {
+		quadtree_destroy(node->SE);
+		free(node->SE);
+	}
 }
 
 // Procedimiento para propagar recursivamente el árbol y construirlo
 void quadtree_build(qnode * node) {
+	printf("%s", KYEL);
 	qnode * nw,* ne,* sw,* se;
 	// Si el nodo tiene mas de un elemento hay que expandirlo
 	if(node->cant > 1) {
 		// Se almacenan los nuevos nodos
-		node->NW = (qnode *) malloc(sizeof(qnode)); nw = node->NW;
-		node->NE = (qnode *) malloc(sizeof(qnode)); ne = node->NE;
-		node->SW = (qnode *) malloc(sizeof(qnode)); sw = node->SW;
-		node->SE = (qnode *) malloc(sizeof(qnode)); se = node->SE;		
+		node->NW = (qnode *) malloc(sizeof(qnode)); 
+		node->NE = (qnode *) malloc(sizeof(qnode)); 
+		node->SW = (qnode *) malloc(sizeof(qnode)); 
+		node->SE = (qnode *) malloc(sizeof(qnode));
+
+			nw = node->NW;
+			ne = node->NE;
+			sw = node->SW;
+			se = node->SE;
+
+			nw->cant = 0;
+			ne->cant = 0;
+			sw->cant = 0;
+			se->cant = 0;
+
+			nw->objects = NULL;
+			ne->objects = NULL;
+			sw->objects = NULL;
+			se->objects = NULL;
 
 		// New ratios
 		nw->ratio = node->ratio / 2;
@@ -66,6 +113,7 @@ void quadtree_build(qnode * node) {
 
 		int i, li;
 
+
 		// Cálulo del centro de masa de la constelación
 		for(i = 0; i < node->cant; i++) {
 			li = node->objects[i];
@@ -81,6 +129,61 @@ void quadtree_build(qnode * node) {
 		printf("Anchor= (%.2E, %.2E) Mass= %.3E Centre= (%.3E, %.3E)\n", node->anchor.x, node->anchor.y, node->mass, node->massCentre.x, node->massCentre.y);
 		#endif
 
+		// for(i = 0; i < node->cant; i++) {
+
+		// 	li = node->objects[i];
+
+		// 	if(
+		// 		univ.objects[li].pos.x < node->anchor.x && univ.objects[li].pos.y >= node->anchor.y) {
+		// 		// NW
+		// 			#ifdef DDEBUG
+		// 			printf("\tEnviando a NW el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->NW)->objects, ((qnode *) node->NW)->cant);
+		// 			#endif
+		// 			((qnode *) node->NW)->objects = (int *) array_push(((qnode *) node->NW)->objects, &((qnode *) node->NW)->cant, node->objects[i]);
+		// 			#ifdef DDEBUG
+		// 			printf("\tOK\n");
+		// 			#endif
+
+		// 	} else if(
+		// 		univ.objects[li].pos.x >= node->anchor.x && univ.objects[li].pos.y >= node->anchor.y) {
+		// 		// NE
+		// 			#ifdef DDEBUG
+		// 			printf("\tEnviando a NE el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->NE)->objects, ((qnode *) node->NE)->cant);
+		// 			#endif
+		// 			((qnode *) node->NE)->objects = (int *) array_push(((qnode *) node->NE)->objects, &((qnode *) node->NE)->cant, node->objects[i]);
+		// 			#ifdef DDEBUG
+		// 			printf("\tOK\n");
+		// 			#endif
+
+		// 	} else if(
+		// 		univ.objects[li].pos.x < node->anchor.x && univ.objects[li].pos.y < node->anchor.y) {
+		// 		// SW
+		// 			#ifdef DDEBUG
+		// 			printf("\tEnviando a SW el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->SW)->objects, ((qnode *) node->SW)->cant);
+		// 			#endif
+		// 			((qnode *) node->SW)->objects = (int *) array_push(((qnode *) node->SW)->objects, &((qnode *) node->SW)->cant, node->objects[i]);
+		// 			#ifdef DDEBUG
+		// 			printf("\tOK\n");
+		// 			#endif
+
+		// 	} else if(
+		// 		univ.objects[li].pos.x >= node->anchor.x && univ.objects[li].pos.y < node->anchor.y) {
+		// 		// SE
+		// 			#ifdef DDEBUG
+		// 			printf("\tEnviando a SE el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->SE)->objects, ((qnode *) node->SE)->cant);
+		// 			#endif
+		// 			((qnode *) node->SE)->objects = (int *) array_push(((qnode *) node->SE)->objects, &((qnode *) node->SE)->cant, node->objects[i]);
+		// 			#ifdef DDEBUG
+		// 			printf("\tOK\n");
+		// 			#endif
+
+		// 	} else {
+		// 		printf("* Error: I can't locate the point into quadtree node.\n");
+		// 		exit(1);
+		// 	}
+
+		// }
+
 		for(i = 0; i < node->cant; i++) {
 
 			li = node->objects[i];
@@ -88,26 +191,46 @@ void quadtree_build(qnode * node) {
 			if(
 				univ.objects[li].pos.x < node->anchor.x && univ.objects[li].pos.y >= node->anchor.y) {
 				// NW
-					((qnode *) node->NW)->objects = array_push(((qnode *) node->NW)->objects, &((qnode *) node->NW)->cant, node->objects[i]);
-					// printf("\tEnviando a NW el objeto nro. %d\n", i);
+					#ifdef DDEBUG
+					printf("\tEnviando a NW el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->NW)->objects, ((qnode *) node->NW)->cant);
+					#endif
+					nw->objects = (int *) array_push(nw->objects, &nw->cant, li);
+					#ifdef DDEBUG
+					printf("\tOK\n");
+					#endif
 
 			} else if(
 				univ.objects[li].pos.x >= node->anchor.x && univ.objects[li].pos.y >= node->anchor.y) {
 				// NE
-					((qnode *) node->NE)->objects = array_push(((qnode *) node->NE)->objects, &((qnode *) node->NE)->cant, node->objects[i]);
-					// printf("\tEnviando a NE el objeto nro. %d\n", i);
+					#ifdef DDEBUG
+					printf("\tEnviando a NE el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->NE)->objects, ((qnode *) node->NE)->cant);
+					#endif
+					ne->objects = (int *) array_push(ne->objects, &ne->cant, li);
+					#ifdef DDEBUG
+					printf("\tOK\n");
+					#endif
 
 			} else if(
 				univ.objects[li].pos.x < node->anchor.x && univ.objects[li].pos.y < node->anchor.y) {
 				// SW
-					((qnode *) node->SW)->objects = array_push(((qnode *) node->SW)->objects, &((qnode *) node->SW)->cant, node->objects[i]);
-					// printf("\tEnviando a SW el objeto nro. %d\n", i);
+					#ifdef DDEBUG
+					printf("\tEnviando a SW el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->SW)->objects, ((qnode *) node->SW)->cant);
+					#endif
+					sw->objects = (int *) array_push(sw->objects, &sw->cant, li);
+					#ifdef DDEBUG
+					printf("\tOK\n");
+					#endif
 
 			} else if(
 				univ.objects[li].pos.x >= node->anchor.x && univ.objects[li].pos.y < node->anchor.y) {
 				// SE
-					((qnode *) node->SE)->objects = array_push(((qnode *) node->SE)->objects, &((qnode *) node->SE)->cant, node->objects[i]);
-					// printf("\tEnviando a SE el objeto nro. %d\n", i);
+					#ifdef DDEBUG
+					printf("\tEnviando a SE el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->SE)->objects, ((qnode *) node->SE)->cant);
+					#endif
+					se->objects = (int *) array_push(se->objects, &se->cant, li);
+					#ifdef DDEBUG
+					printf("\tOK\n");
+					#endif
 
 			} else {
 				printf("* Error: I can't locate the point into quadtree node.\n");
@@ -117,18 +240,19 @@ void quadtree_build(qnode * node) {
 		}
 
 		#ifdef DDEBUG
-		printf("\tNW(%d): ", ((qnode *) node->NW)->cant);
+		printf("\tNW(%d:%d)\t%p\t: ", ((qnode *) node->NW)->cant, nw->cant, ((qnode *) node->NW)->objects);
 		array_print(((qnode *) node->NW)->objects, ((qnode *) node->NW)->cant);
 
-		printf("\tNE(%d): ", ((qnode *) node->NE)->cant);
+		printf("\tNE(%d:%d)\t%p\t: ", ((qnode *) node->NE)->cant, ne->cant, ((qnode *) node->NE)->objects);
 		array_print(((qnode *) node->NE)->objects, ((qnode *) node->NE)->cant);
 		
-		printf("\tSW(%d): ", ((qnode *) node->SW)->cant);
+		printf("\tSW(%d:%d)\t%p\t: ", ((qnode *) node->SW)->cant, sw->cant, ((qnode *) node->SW)->objects);
 		array_print(((qnode *) node->SW)->objects, ((qnode *) node->SW)->cant);
 
-		printf("\tSE(%d): ", ((qnode *) node->SE)->cant);
+		printf("\tSE(%d:%d)\t%p\t: ", ((qnode *) node->SE)->cant, se->cant, ((qnode *) node->SE)->objects);
 		array_print(((qnode *) node->SE)->objects, ((qnode *) node->SE)->cant);
 		#endif
+
 		// control++;
 		// if(control == 8)
 		// 	exit(0);		
@@ -155,6 +279,7 @@ void quadtree_build(qnode * node) {
 		printf("Anchor= (%.2E, %.2E) Mass= %.3E Centre= (%.3E, %.3E)\n", node->anchor.x, node->anchor.y, node->mass, node->massCentre.x, node->massCentre.y);
 		#endif
 	}
+	printf("%s", KNRM);
 }
 
 // Muestra el árbol por niveles
