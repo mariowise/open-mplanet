@@ -53,6 +53,6 @@ clean:
 
 run:
 	@ clear
-	@ $(OUTPUT) -i etc/input.dat -o output.dat -T 4.0E+12 -t 100000 -h 8
+	@ $(OUTPUT) -i etc/input.dat -o output.dat -T 6.0E+7 -t 100000 -h 8
 
 me: clean main run

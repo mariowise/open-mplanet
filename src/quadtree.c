@@ -129,61 +129,6 @@ void quadtree_build(qnode * node) {
 		printf("Anchor= (%.2E, %.2E) Mass= %.3E Centre= (%.3E, %.3E)\n", node->anchor.x, node->anchor.y, node->mass, node->massCentre.x, node->massCentre.y);
 		#endif
 
-		// for(i = 0; i < node->cant; i++) {
-
-		// 	li = node->objects[i];
-
-		// 	if(
-		// 		univ.objects[li].pos.x < node->anchor.x && univ.objects[li].pos.y >= node->anchor.y) {
-		// 		// NW
-		// 			#ifdef DDEBUG
-		// 			printf("\tEnviando a NW el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->NW)->objects, ((qnode *) node->NW)->cant);
-		// 			#endif
-		// 			((qnode *) node->NW)->objects = (int *) array_push(((qnode *) node->NW)->objects, &((qnode *) node->NW)->cant, node->objects[i]);
-		// 			#ifdef DDEBUG
-		// 			printf("\tOK\n");
-		// 			#endif
-
-		// 	} else if(
-		// 		univ.objects[li].pos.x >= node->anchor.x && univ.objects[li].pos.y >= node->anchor.y) {
-		// 		// NE
-		// 			#ifdef DDEBUG
-		// 			printf("\tEnviando a NE el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->NE)->objects, ((qnode *) node->NE)->cant);
-		// 			#endif
-		// 			((qnode *) node->NE)->objects = (int *) array_push(((qnode *) node->NE)->objects, &((qnode *) node->NE)->cant, node->objects[i]);
-		// 			#ifdef DDEBUG
-		// 			printf("\tOK\n");
-		// 			#endif
-
-		// 	} else if(
-		// 		univ.objects[li].pos.x < node->anchor.x && univ.objects[li].pos.y < node->anchor.y) {
-		// 		// SW
-		// 			#ifdef DDEBUG
-		// 			printf("\tEnviando a SW el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->SW)->objects, ((qnode *) node->SW)->cant);
-		// 			#endif
-		// 			((qnode *) node->SW)->objects = (int *) array_push(((qnode *) node->SW)->objects, &((qnode *) node->SW)->cant, node->objects[i]);
-		// 			#ifdef DDEBUG
-		// 			printf("\tOK\n");
-		// 			#endif
-
-		// 	} else if(
-		// 		univ.objects[li].pos.x >= node->anchor.x && univ.objects[li].pos.y < node->anchor.y) {
-		// 		// SE
-		// 			#ifdef DDEBUG
-		// 			printf("\tEnviando a SE el objeto nro. %d en dirección %p (%d)\n", i, ((qnode *) node->SE)->objects, ((qnode *) node->SE)->cant);
-		// 			#endif
-		// 			((qnode *) node->SE)->objects = (int *) array_push(((qnode *) node->SE)->objects, &((qnode *) node->SE)->cant, node->objects[i]);
-		// 			#ifdef DDEBUG
-		// 			printf("\tOK\n");
-		// 			#endif
-
-		// 	} else {
-		// 		printf("* Error: I can't locate the point into quadtree node.\n");
-		// 		exit(1);
-		// 	}
-
-		// }
-
 		for(i = 0; i < node->cant; i++) {
 
 			li = node->objects[i];
@@ -305,33 +250,26 @@ void quadtree_barnes_hut(qnode * T, int Ci) {
 		exit(1);
 	} else if(T->cant == 0)
 		return;
-
-
+	
 	double r = point2D_distance(univ.objects[Ci].pos, univ.objects[T->objects[0]].pos);
 
 	// Si es un nodo externo
 	if(T->cant == 1 && T->objects[0] != Ci) {
 		double forceBetweenThem = 6.67384E-11 * (univ.objects[T->objects[0]].mass) / (r * r);
 		point2D * direction = point2D_direction(univ.objects[Ci].pos, univ.objects[T->objects[0]].pos);
-		// double accModule = forceBetweenThem / univ.objects[Ci].mass;
 		direction->x = direction->x * forceBetweenThem;
 		direction->y = direction->y * forceBetweenThem;
 
 		// printf("Direccion entre Ci= %d y Obj= %d (%.0E, %.0E)\n", Ci, T->objects[0], direction->x, direction->y);
 
-		// # CRITICAL #############################################
 		// a(t)
 		univ.objects[Ci].acc.x += direction->x;
 		univ.objects[Ci].acc.y += direction->y;
-		// ########################################################
 
 		return;
-	// }
-	// if(point2D_distance(univ.objects[Ci].pos, univ.objects[T->objects[0]].pos) > Threshold) {
 
 	} else if(T->cant == 1 && T->objects[0] == Ci) {
 		return;
-
 	} else {
 		if(T->NW != NULL)
 			quadtree_barnes_hut(T->NW, Ci);

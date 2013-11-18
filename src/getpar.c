@@ -4,6 +4,8 @@
 #include <string.h>
 
 #include <getpar.h>
+#include <point2D.h>
+#include <universe.h>
 
 // Obtiene los parámetros con getopt
 void getpar(int argc, char * argv[]) {
@@ -83,4 +85,24 @@ void printpar() {
 	printf(" -T: %.2f\n", par.T);
 	printf(" -t: %.2f\n", par.t);
 	printf(" -h: %d\n", par.h);
+}
+
+// Escriba el archivo de salida
+void printOutput() {
+	FILE * fd = fopen(par.o, "w");
+	fprintf(fd, "%d\n", univ.cant);
+	fprintf(fd, "%.2E\n", univ.ratio);
+	int i;
+	for(i = 0; i < univ.cant; i++) {
+		fprintf(fd, "%.3E %.3E %.3E %.3E %.3E", 
+			univ.objects[i].pos.x,
+			univ.objects[i].pos.y,
+			univ.objects[i].vel.x,
+			univ.objects[i].vel.y,
+			univ.objects[i].mass);
+		if(i != (univ.cant-1))
+			fprintf(fd, "\n");
+
+	}
+	close(fd);
 }

@@ -50,10 +50,12 @@ int main(int argc, char * argv[]) {
 		// printf("Iniciando\n");
 		tree = quadtree_init();
 
-		printf("(%.0f, %.0f)", univ.objects[1].pos.x / NR, univ.objects[1].pos.y / NR);
-		printf("\tspeed = (%.0E, %.0E)", univ.objects[1].vel.x, univ.objects[1].vel.y);
-		printf("\tacc = (%.0E, %.0E)", univ.objects[1].acc.x, univ.objects[1].acc.y);
-		printf("\t[%.1E]\n", point2D_module(univ.objects[1].acc));
+		if(univ.cant > 1) {
+			printf("(%.0f, %.0f)", univ.objects[1].pos.x / NR, univ.objects[1].pos.y / NR);
+			printf("\tspeed = (%.0E, %.0E)", univ.objects[1].vel.x, univ.objects[1].vel.y);
+			printf("\tacc = (%.0E, %.0E)", univ.objects[1].acc.x, univ.objects[1].acc.y);
+			printf("\t[%.1E]\n", point2D_module(univ.objects[1].acc));
+		}
 
 		quadtree_build(tree);
 
@@ -65,6 +67,7 @@ int main(int argc, char * argv[]) {
 					#pragma omp task
 					{
 						quadtree_barnes_hut(tree, tree->objects[i]);
+						// printf("Thread no. %d doing task no. %d\n", omp_get_thread_num(), i);
 					}
 			}
 		}
@@ -85,5 +88,10 @@ int main(int argc, char * argv[]) {
 		times++;
 	}
 
+	printOutput();
+
+	printf("Simulación terminada, estado final escrito en: %s\n", par.o);
+
 	return EXIT_SUCCESS;
 }
+
